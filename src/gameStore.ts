@@ -110,7 +110,7 @@ function createInitialTargets(): DestructibleTargetSpec[] {
 
 function createInitialVehicles(): SpawnedVehicleEntry[] {
   const carDir = latLonToPosition(86.2, 15, 1);
-  const carPose = surfacePoseFromDir(carDir, 1.5);
+  const carPose = surfacePoseFromDir(carDir, 0.35);
   const jetDir = latLonToPosition(84.5, -48, 1);
   const jetPose = surfacePoseFromDir(jetDir, 2.3);
   return [

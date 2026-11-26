@@ -83,6 +83,8 @@ export function CraftAndVehicles(): React.JSX.Element {
               position={entry.position}
               rotation={entry.rotation}
               ccd
+              linearDamping={0.08}
+              angularDamping={1.35}
               carConfig={{
                 engineHorsepower: 360,
                 maxSteerAngle: 0.58,

@@ -76,9 +76,10 @@ export function GameHud(): React.JSX.Element {
 
       const buf = await file.arrayBuffer();
       const ingested = await ingestSand3dOrGlb(buf, file.name);
-      const pose = spawnOffsetOnPlanet(2.0);
+      const isVehicleDrop = mode === "vehicle" || ingested.worldKind === "vehicle";
+      const pose = spawnOffsetOnPlanet(isVehicleDrop ? 0.45 : 2.0);
 
-      if (mode === "vehicle" || ingested.worldKind === "vehicle") {
+      if (isVehicleDrop) {
         spawnVehicle({
           label: ingested.name,
           kind: "imported",
@@ -390,7 +391,7 @@ export function GameHud(): React.JSX.Element {
                   key={item.recipe}
                   type="button"
                   onClick={() => {
-                    const pose = spawnOffsetOnPlanet(item.kind === "craft" ? 2.4 : 1.5);
+                    const pose = spawnOffsetOnPlanet(item.kind === "craft" ? 2.4 : 0.35);
                     spawnVehicle({
                       label: item.label.replace(/^[^\s]+\s/, ""),
                       kind: item.kind,
