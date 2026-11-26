@@ -7,7 +7,7 @@ import { PLANET_RADIUS, latLonToPosition, surfacePoseFromDir } from "./planetMat
 
 function buildKolmogorovPlanetGeometry(radius: number): THREE.BufferGeometry {
   // Minimal Kolmogorov seed -> subdivided icosahedron with deterministic harmonic relief + vertex biomes
-  const base = new THREE.IcosahedronGeometry(radius, 4);
+  const base = new THREE.IcosahedronGeometry(radius, 5);
   const geo = base.index ? base.toNonIndexed() : base;
   if (base.index) base.dispose();
 
@@ -29,27 +29,27 @@ function buildKolmogorovPlanetGeometry(radius: number): THREE.BufferGeometry {
 
     // Deterministic trigonometric biome field (zero texture downloads)
     const harmonic =
-      Math.sin(dir.x * 5.2 + dir.z * 3.1) * 0.45 +
-      Math.cos(dir.y * 4.7 - dir.x * 2.9) * 0.35 +
-      Math.sin((dir.x + dir.y + dir.z) * 8.3) * 0.2;
+      Math.sin(dir.x * 7.2 + dir.z * 4.3) * 0.45 +
+      Math.cos(dir.y * 6.4 - dir.x * 3.8) * 0.35 +
+      Math.sin((dir.x + dir.y + dir.z) * 11.1) * 0.2;
 
     const eqDist = Math.abs(dir.y);
     let radialOffset = 0;
 
-    if (eqDist < 0.085) {
+    if (eqDist < 0.055) {
       // Equator Space Car Speedway!
-      const isCenterStripe = eqDist < 0.016 && Math.sin(Math.atan2(dir.x, dir.z) * 18) > 0;
+      const isCenterStripe = eqDist < 0.011 && Math.sin(Math.atan2(dir.x, dir.z) * 32) > 0;
       c.copy(isCenterStripe ? stripe : raceway);
-      radialOffset = 0.02;
+      radialOffset = 0.01;
     } else if (harmonic < -0.24) {
       c.copy(ocean);
-      radialOffset = -0.1;
+      radialOffset = -0.05;
     } else if (harmonic > 0.34) {
       c.copy(mango);
-      radialOffset = 0.12;
+      radialOffset = 0.06;
     } else {
       c.copy(mint).lerp(lime, THREE.MathUtils.clamp((harmonic + 0.24) / 0.58, 0, 1));
-      radialOffset = harmonic * 0.08;
+      radialOffset = harmonic * 0.04;
     }
 
     v.copy(dir).multiplyScalar(radius + radialOffset);
@@ -65,12 +65,12 @@ function buildKolmogorovPlanetGeometry(radius: number): THREE.BufferGeometry {
 }
 
 const SNACK_BEACON_COORDS: readonly { lat: number; lon: number; color: string }[] = [
-  { lat: 78, lon: -18, color: "#ff1744" },
-  { lat: 48, lon: 62, color: "#ff9100" },
-  { lat: 20, lon: -108, color: "#ffd600" },
-  { lat: -15, lon: 145, color: "#00e676" },
-  { lat: -52, lon: -38, color: "#00e5ff" },
-  { lat: -76, lon: 92, color: "#d500f9" },
+  { lat: 86.5, lon: -28, color: "#ff1744" },
+  { lat: 81.5, lon: 55, color: "#ff9100" },
+  { lat: 60, lon: -108, color: "#ffd600" },
+  { lat: 30, lon: 145, color: "#00e676" },
+  { lat: 0, lon: -38, color: "#00e5ff" },
+  { lat: -42, lon: 92, color: "#d500f9" },
 ];
 
 export function HungryPlanetMesh(): React.JSX.Element {
@@ -110,9 +110,9 @@ export function HungryPlanetMesh(): React.JSX.Element {
   });
 
   const landmarks = useMemo(() => {
-    const consolePose = surfacePoseFromDir(latLonToPosition(84, -45, 1), 0.1);
-    const solarPose = surfacePoseFromDir(latLonToPosition(64, 145, 1), 0.1);
-    const rocketPropPose = surfacePoseFromDir(latLonToPosition(44, -15, 1), 0.1);
+    const consolePose = surfacePoseFromDir(latLonToPosition(87.2, -45, 1), 0.05);
+    const solarPose = surfacePoseFromDir(latLonToPosition(84.8, 135, 1), 0.05);
+    const rocketPropPose = surfacePoseFromDir(latLonToPosition(83.5, -10, 1), 0.05);
     return { consolePose, solarPose, rocketPropPose };
   }, []);
 
@@ -120,14 +120,14 @@ export function HungryPlanetMesh(): React.JSX.Element {
     <>
       {/* Spherical Planetary BallCollider — exact center [0,0,0] matches KolmoPointGravity */}
       <RigidBody type="fixed" colliders={false} userData={{ kind: "planet", radius: PLANET_RADIUS }}>
-        <BallCollider args={[PLANET_RADIUS]} friction={1.08} restitution={0.14} />
+        <BallCollider args={[PLANET_RADIUS]} friction={1.08} restitution={0.05} />
         <mesh geometry={res.planetGeo} material={res.planetMat} receiveShadow castShadow />
       </RigidBody>
 
       {/* Orbital Snack Halo Ring */}
       <mesh ref={haloRef} rotation={[Math.PI * 0.42, 0.25, 0]}>
-        <torusGeometry args={[PLANET_RADIUS + 11.5, 0.22, 8, 64]} />
-        <meshBasicMaterial color="#38bdf8" transparent opacity={0.32} />
+        <torusGeometry args={[PLANET_RADIUS + 24, 0.45, 8, 96]} />
+        <meshBasicMaterial color="#38bdf8" transparent opacity={0.3} />
       </mesh>
 
       {/* 6 Color-Coded Snack Beacons around the globe */}
@@ -174,10 +174,10 @@ export function HungryPlanetMesh(): React.JSX.Element {
 
       {/* Distant Ringed Exoplanet backdrop */}
       <Exoplanet
-        position={[-115, 72, -175]}
-        radius={34}
-        ringInner={48}
-        ringOuter={76}
+        position={[-260, 140, -380]}
+        radius={68}
+        ringInner={94}
+        ringOuter={148}
         color="#f472b6"
         moonlets
       />

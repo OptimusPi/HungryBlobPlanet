@@ -14,6 +14,7 @@ export interface BlobAlienVisualProps {
   readonly mouthOpen?: number;
   readonly chompPulse?: number;
   readonly burpPulse?: number;
+  readonly getMotion?: () => { speed: number; mouthOpen: number; chompPulse: number; burpPulse: number };
   readonly nameTag?: string;
 }
 
@@ -30,6 +31,7 @@ export function BlobAlienVisual({
   mouthOpen = 0,
   chompPulse = 0,
   burpPulse = 0,
+  getMotion,
   nameTag,
 }: BlobAlienVisualProps): React.JSX.Element {
   const rootRef = useRef<THREE.Group | null>(null);
@@ -45,16 +47,17 @@ export function BlobAlienVisual({
 
   useFrame((_, rawDt) => {
     const dt = Math.min(0.05, rawDt);
-    phaseRef.current += dt * (2.6 + Math.min(8, speed * 1.45));
+    const live = getMotion ? getMotion() : { speed, mouthOpen, chompPulse, burpPulse };
+    phaseRef.current += dt * (2.6 + Math.min(8, live.speed * 1.45));
     const t = phaseRef.current;
 
-    const moving = speed > 0.35;
+    const moving = live.speed > 0.35;
     const walkSwing = moving ? Math.sin(t * 2.1) * 0.72 : Math.sin(t * 0.6) * 0.1;
     const armWave = moving ? Math.sin(t * 2.6) * 0.85 : Math.sin(t * 1.1) * 0.25;
 
     // Squash & stretch on chomp, burp, and walking bounce
-    const chompSquash = Math.sin(chompPulse * Math.PI) * 0.24;
-    const burpBloat = Math.sin(burpPulse * Math.PI) * 0.18;
+    const chompSquash = Math.sin(live.chompPulse * Math.PI) * 0.24;
+    const burpBloat = Math.sin(live.burpPulse * Math.PI) * 0.18;
     const walkBounce = moving ? Math.abs(Math.sin(t * 2.1)) * 0.08 : Math.sin(t * 0.7) * 0.02;
 
     if (bodyRef.current) {
@@ -83,8 +86,8 @@ export function BlobAlienVisual({
       haloRef.current.rotation.y -= dt * 1.8;
     }
     if (mouthRef.current) {
-      const openScale = 0.4 + Math.min(1.4, mouthOpen * 0.9 + chompPulse * 1.1 + burpPulse * 0.8);
-      mouthRef.current.scale.set(1.0 + chompPulse * 0.3, openScale, 1);
+      const openScale = 0.4 + Math.min(1.4, live.mouthOpen * 0.9 + live.chompPulse * 1.1 + live.burpPulse * 0.8);
+      mouthRef.current.scale.set(1.0 + live.chompPulse * 0.3, openScale, 1);
     }
   });
 
@@ -241,25 +244,21 @@ export function PlayerBlobMesh(): React.JSX.Element {
       : (CRAVING_TIERS[(mealsEaten - 1 + CRAVING_TIERS.length) % CRAVING_TIERS.length]?.color ?? "#38bdf8");
   const bodyColor = playerBlobMotion.lastEatColor || prevEatenColor;
 
-  const [anim, setAnim] = React.useState({ speed: 0, mouthOpen: 0, chomp: 0, burp: 0 });
-  const accumRef = useRef(0);
+  const motionSnapshotRef = useRef({ speed: 0, mouthOpen: 0, chompPulse: 0, burpPulse: 0 });
+  const getMotion = useMemo(
+    () => () => motionSnapshotRef.current,
+    [],
+  );
 
   useFrame((_, rawDt) => {
     const dt = Math.min(0.05, rawDt);
     playerBlobMotion.chompPulse = Math.max(0, playerBlobMotion.chompPulse - dt * 2.8);
     playerBlobMotion.burpPulse = Math.max(0, playerBlobMotion.burpPulse - dt * 1.9);
-
-    accumRef.current += dt;
-    if (accumRef.current >= 0.05) {
-      accumRef.current = 0;
-      const mouthOpen = playerBlobMotion.nearCravingDist < 4.5 ? 1 - playerBlobMotion.nearCravingDist / 4.5 : 0;
-      setAnim({
-        speed: playerBlobMotion.speed,
-        mouthOpen,
-        chomp: playerBlobMotion.chompPulse,
-        burp: playerBlobMotion.burpPulse,
-      });
-    }
+    motionSnapshotRef.current.speed = playerBlobMotion.speed;
+    motionSnapshotRef.current.mouthOpen =
+      playerBlobMotion.nearCravingDist < 5.5 ? 1 - playerBlobMotion.nearCravingDist / 5.5 : 0;
+    motionSnapshotRef.current.chompPulse = playerBlobMotion.chompPulse;
+    motionSnapshotRef.current.burpPulse = playerBlobMotion.burpPulse;
   });
 
   return (
@@ -268,10 +267,7 @@ export function PlayerBlobMesh(): React.JSX.Element {
       bodyColor={bodyColor}
       cravingColor={tierDef.color}
       activeShape={activeShape}
-      speed={anim.speed}
-      mouthOpen={anim.mouthOpen}
-      chompPulse={anim.chomp}
-      burpPulse={anim.burp}
+      getMotion={getMotion}
     />
   );
 }

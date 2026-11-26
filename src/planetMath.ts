@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { ORB_TIERS, type OrbShape, type OrbTier } from "@pinkaphant/kolmo/suika";
 
-export const PLANET_RADIUS = 26;
-export const PLANET_SURFACE_G = 14.0;
+export const PLANET_RADIUS = 120;
+export const PLANET_SURFACE_G = 9.81;
 
 /**
  * First 7 Suika tiers (Red -> Orange -> Yellow -> Green -> Cyan -> Blue -> Violet)

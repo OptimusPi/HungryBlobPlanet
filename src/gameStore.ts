@@ -75,18 +75,18 @@ function createInitialTargets(): DestructibleTargetSpec[] {
     url?: string;
     hp: number;
   }> = [
-    { lat: 74, lon: 25, kind: "tin-can", labelId: "garys-beans", hp: 40 },
-    { lat: 70, lon: -32, kind: "tin-can", labelId: "tris-soda", hp: 40 },
-    { lat: 64, lon: 68, kind: "tin-can", labelId: "goofy-emoji", hp: 40 },
-    { lat: 60, lon: -75, kind: "glass-bottle", labelId: "tris-soda", hp: 20 },
-    { lat: 52, lon: 115, kind: "glass-bottle", labelId: "target", hp: 20 },
-    { lat: 46, lon: -140, kind: "tin-can", labelId: "garys-beans", hp: 40 },
-    { lat: 36, lon: 15, kind: "imported-glb", labelId: "custom", url: "/assets/ss_crate_small_1m.glb", hp: 45 },
-    { lat: 30, lon: -55, kind: "imported-glb", labelId: "custom", url: "/assets/ss_canister_fuel_1m.glb", hp: 35 },
-    { lat: 24, lon: 95, kind: "imported-glb", labelId: "custom", url: "/assets/obs_banana_crate_spill.glb", hp: 35 },
-    { lat: 16, lon: -120, kind: "imported-glb", labelId: "custom", url: "/assets/prop_vending_soda.glb", hp: 65 },
-    { lat: -12, lon: 42, kind: "imported-glb", labelId: "custom", url: "/assets/obs_fire_hydrant_geyser.glb", hp: 50 },
-    { lat: -22, lon: -85, kind: "imported-glb", labelId: "custom", url: "/assets/ss_tank_oxygen_1.2m.glb", hp: 35 },
+    { lat: 87.0, lon: 25, kind: "tin-can", labelId: "garys-beans", hp: 40 },
+    { lat: 86.4, lon: -32, kind: "tin-can", labelId: "tris-soda", hp: 40 },
+    { lat: 85.2, lon: 68, kind: "tin-can", labelId: "goofy-emoji", hp: 40 },
+    { lat: 84.8, lon: -75, kind: "glass-bottle", labelId: "tris-soda", hp: 20 },
+    { lat: 83.2, lon: 115, kind: "glass-bottle", labelId: "target", hp: 20 },
+    { lat: 82.0, lon: -140, kind: "tin-can", labelId: "garys-beans", hp: 40 },
+    { lat: 86.2, lon: 155, kind: "imported-glb", labelId: "custom", url: "/assets/ss_crate_small_1m.glb", hp: 45 },
+    { lat: 84.0, lon: -15, kind: "imported-glb", labelId: "custom", url: "/assets/ss_canister_fuel_1m.glb", hp: 35 },
+    { lat: 81.5, lon: 95, kind: "imported-glb", labelId: "custom", url: "/assets/obs_banana_crate_spill.glb", hp: 35 },
+    { lat: 78.0, lon: -120, kind: "imported-glb", labelId: "custom", url: "/assets/prop_vending_soda.glb", hp: 65 },
+    { lat: 4.0, lon: 42, kind: "imported-glb", labelId: "custom", url: "/assets/obs_fire_hydrant_geyser.glb", hp: 50 },
+    { lat: -6.0, lon: -85, kind: "imported-glb", labelId: "custom", url: "/assets/ss_tank_oxygen_1.2m.glb", hp: 35 },
   ];
 
   return specs.map((s, idx) => {
@@ -109,9 +109,9 @@ function createInitialTargets(): DestructibleTargetSpec[] {
 }
 
 function createInitialVehicles(): SpawnedVehicleEntry[] {
-  const carDir = latLonToPosition(76, 12, 1);
+  const carDir = latLonToPosition(86.2, 15, 1);
   const carPose = surfacePoseFromDir(carDir, 1.5);
-  const jetDir = latLonToPosition(72, -62, 1);
+  const jetDir = latLonToPosition(84.5, -48, 1);
   const jetPose = surfacePoseFromDir(jetDir, 2.3);
   return [
     {
@@ -138,7 +138,7 @@ function createInitialNpcs(): NpcBlobState[] {
     {
       id: "npc_blorp",
       name: "BLORP",
-      position: latLonToPosition(62, 110, PLANET_RADIUS + 0.55),
+      position: latLonToPosition(83, 85, PLANET_RADIUS + 0.55),
       heading: [0, 0, 1],
       mealsEaten: 1,
       cravingTier: 0,
@@ -148,7 +148,7 @@ function createInitialNpcs(): NpcBlobState[] {
     {
       id: "npc_chonk",
       name: "CHONK-01",
-      position: latLonToPosition(35, -145, PLANET_RADIUS + 0.65),
+      position: latLonToPosition(79, -120, PLANET_RADIUS + 0.65),
       heading: [1, 0, 0],
       mealsEaten: 3,
       cravingTier: 2,
@@ -158,7 +158,7 @@ function createInitialNpcs(): NpcBlobState[] {
     {
       id: "npc_sir_round",
       name: "SIR ROUND",
-      position: latLonToPosition(-28, 30, PLANET_RADIUS + 0.72),
+      position: latLonToPosition(72, 25, PLANET_RADIUS + 0.72),
       heading: [0, 0, -1],
       mealsEaten: 5,
       cravingTier: 3,

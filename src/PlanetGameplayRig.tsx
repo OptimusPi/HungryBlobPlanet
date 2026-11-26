@@ -54,25 +54,29 @@ function BoltMesh({ bolt }: { readonly bolt: PlasmaBolt }): React.JSX.Element {
   );
 }
 
-/** Seed 14 colorful Suika orbs across the planet surface on boot / reset. */
+/** Seed 18 colorful Suika orbs across the north landing basin + globe on boot / reset. */
 function seedInitialSuikaFeast(): void {
   defaultSuikaArbiter.clear();
   defaultSuikaArbiter.setInSpace(false);
   const seeds: Array<{ lat: number; lon: number; tier: number }> = [
-    { lat: 86, lon: 18, tier: 0 },
-    { lat: 82, lon: -24, tier: 0 },
-    { lat: 79, lon: 48, tier: 0 },
-    { lat: 74, lon: -52, tier: 1 },
-    { lat: 68, lon: 88, tier: 1 },
-    { lat: 62, lon: -12, tier: 2 },
-    { lat: 55, lon: 132, tier: 2 },
-    { lat: 42, lon: -96, tier: 3 },
-    { lat: 28, lon: 45, tier: 3 },
-    { lat: 15, lon: -165, tier: 1 },
-    { lat: -10, lon: 75, tier: 0 },
-    { lat: -25, lon: -40, tier: 2 },
-    { lat: -48, lon: 120, tier: 4 },
-    { lat: -65, lon: -115, tier: 0 },
+    { lat: 88.2, lon: 18, tier: 0 },
+    { lat: 87.6, lon: -24, tier: 0 },
+    { lat: 87.0, lon: 55, tier: 0 },
+    { lat: 86.2, lon: -65, tier: 1 },
+    { lat: 85.4, lon: 92, tier: 1 },
+    { lat: 84.8, lon: -12, tier: 2 },
+    { lat: 84.0, lon: 138, tier: 2 },
+    { lat: 83.0, lon: -102, tier: 3 },
+    { lat: 81.8, lon: 40, tier: 3 },
+    { lat: 80.5, lon: -155, tier: 1 },
+    { lat: 78.0, lon: 170, tier: 0 },
+    { lat: 74.0, lon: -40, tier: 2 },
+    { lat: 55.0, lon: 120, tier: 4 },
+    { lat: 35.0, lon: -115, tier: 0 },
+    { lat: 10.0, lon: 35, tier: 1 },
+    { lat: -15.0, lon: -80, tier: 2 },
+    { lat: -40.0, lon: 75, tier: 3 },
+    { lat: -65.0, lon: -145, tier: 4 },
   ];
 
   for (const s of seeds) {
@@ -140,20 +144,28 @@ export function PlanetGameplayRig(): React.JSX.Element {
     [recordMerge],
   );
 
-  // Canvas pointer firing + hotkeys + global drag-and-drop GLB importer
+  const pointerDownPosRef = useRef<{ x: number; y: number } | null>(null);
+
+  // Canvas pointer firing (short click only, never on camera drag!) + hotkeys + drag-drop GLB importer
   useEffect(() => {
     const dom = gl.domElement;
 
     const onPointerDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
+      pointerDownPosRef.current = { x: e.clientX, y: e.clientY };
+    };
+    const onPointerUp = (e: PointerEvent) => {
+      if (e.button !== 0) return;
+      const down = pointerDownPosRef.current;
+      pointerDownPosRef.current = null;
+      if (!down) return;
+      const moveSq = (e.clientX - down.x) ** 2 + (e.clientY - down.y) ** 2;
+      if (moveSq > 36) return; // Ignore camera orbit drags (>6px)
       const rect = dom.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return;
       const ndcX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const ndcY = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-      fireRequestedRef.current = { active: true, ndcX, ndcY, oneShot: false };
-    };
-    const onPointerUp = () => {
-      fireRequestedRef.current.active = false;
+      fireRequestedRef.current = { active: true, ndcX, ndcY, oneShot: true };
     };
 
     const onKeyDown = (e: KeyboardEvent) => {
@@ -163,7 +175,7 @@ export function PlanetGameplayRig(): React.JSX.Element {
       else if (e.code === "Digit3") setTool("spawner");
       else if (e.code === "KeyJ") {
         fireRequestedRef.current = { active: true, ndcX: 0, ndcY: 0.05, oneShot: true };
-      } else if (e.code === "KeyE") {
+      } else if (e.code === "KeyH") {
         chompKeyRef.current = true;
       } else if (e.code === "Tab") {
         e.preventDefault();
@@ -172,7 +184,7 @@ export function PlanetGameplayRig(): React.JSX.Element {
     };
     const onKeyUp = (e: KeyboardEvent) => {
       if (e.code === "KeyJ") fireRequestedRef.current.active = false;
-      if (e.code === "KeyE") chompKeyRef.current = false;
+      if (e.code === "KeyH") chompKeyRef.current = false;
     };
 
     const onDragOver = (e: DragEvent) => e.preventDefault();
@@ -316,10 +328,11 @@ export function PlanetGameplayRig(): React.JSX.Element {
       _rayOrigin.copy(_raycaster.ray.origin);
       _rayDir.copy(_raycaster.ray.direction).normalize();
 
+      const spawnClearance = st.blobRadius + 2.4;
       const spawnPt = _playerPos
         .clone()
-        .addScaledVector(_playerUp, st.blobRadius + 0.85)
-        .addScaledVector(_rayDir, st.blobRadius + 1.15);
+        .addScaledVector(_playerUp, st.blobRadius + 1.15)
+        .addScaledVector(_rayDir, spawnClearance);
 
       playLauncherFire(st.tool);
 

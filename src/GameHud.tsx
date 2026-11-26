@@ -10,11 +10,11 @@ const BORDER_SUBTLE = "1px solid rgba(148, 163, 184, 0.28)";
 function spawnOffsetOnPlanet(alt: number): { position: [number, number, number]; rotation: [number, number, number] } {
   const [x, y, z] = playerBlobMotion.worldPos;
   const [ux, uy, uz] = playerBlobMotion.worldUp;
-  // Offset slightly sideways in tangent plane so new spawn doesn't crush the player
-  const rawDir: [number, number, number] = [ux + 0.16, uy, uz + 0.16];
+  // Offset slightly sideways in tangent plane (~7m on R=120m) so new spawn doesn't crush the player
+  const rawDir: [number, number, number] = [ux + 0.06, uy, uz + 0.06];
   const pose = surfacePoseFromDir(rawDir, alt);
   if (!Number.isFinite(x + y + z)) {
-    const fallback = surfacePoseFromDir(latLonToPosition(78, 15, 1), alt);
+    const fallback = surfacePoseFromDir(latLonToPosition(87, 15, 1), alt);
     return { position: fallback.position, rotation: fallback.euler };
   }
   return { position: pose.position, rotation: pose.euler };
@@ -229,7 +229,7 @@ export function GameHud(): React.JSX.Element {
               textAlign: "center",
             }}
           >
-            WASD Move/Drive · Drag Orbit Cam · Click / [J] Fire · [E] Force-Chomp · [F] Board/Exit · [R] Flip · [Tab] Forge
+            WASD Move/Drive · Drag Orbit Cam · Click / [J] Fire · [H] Force-Chomp · [F] Board/Exit · [R] Flip · [Tab] Forge
           </div>
           {nearVehicleId && playerMode === "foot" && (
             <button
@@ -681,7 +681,7 @@ export function GameHud(): React.JSX.Element {
               fontWeight: 900,
             }}
           >
-            CHOMP [E]
+            CHOMP [H]
           </button>
         </div>
       </div>

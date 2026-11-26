@@ -63,11 +63,35 @@ export function App(): React.JSX.Element {
         >
           <HungryPlanetMesh />
           <Actor
-            position={[0, PLANET_RADIUS + 1.5, 0]}
+            position={[0, PLANET_RADIUS + 1.4, 0]}
+            cameraProps={{
+              minDistance: 4.5,
+              maxDistance: 24,
+              smoothTime: 0.12,
+            }}
             ecctrlProps={{
-              maxWalkVel: 5.5,
-              maxRunVel: 11.5,
-              jumpVel: 8.4,
+              density: 200,
+              capsuleHalfHeight: 0.35,
+              capsuleRadius: 0.35,
+              maxWalkVel: 4.5,
+              maxRunVel: 9.5,
+              moveImpulsePointOffset: 0,
+              jumpVel: 6.8,
+              fallingGravityScale: 2.0,
+              gravityDirLerpSpeed: 8,
+              floatHeight: 0.3,
+              rayOriginOffest: -0.35,
+              rayHitForgiveness: 0.35,
+              rayLength: 1.4,
+              rayRadius: 0.16,
+              springK: 6400,
+              dampingC: 860,
+              autoBalance: true,
+              autoBalanceSpringK: 50,
+              autoBalanceDampingC: 3.5,
+              autoBalanceSpringOnY: 8,
+              autoBalanceDampingOnY: 0.85,
+              followPlatform: false,
             }}
           >
             <PlayerBlobMesh />
